@@ -5,7 +5,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-/*
+/**
  * 题目: 2956. 消除相邻近似相等字符
  * 链接:
  * https://leetcode.cn/contest/biweekly-contest-119/problems/remove-adjacent-almost-equal-characters/
