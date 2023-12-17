@@ -49,6 +49,8 @@ auto init = [] {
 
 class Solution {
 public:
+  //  - 在有序`vector<int>` 中查找小于等于`x`的最大整数（假设一定存在）：
+  //      - `int y = *--upper_bound(a.begin(), a.end(), x);`
   static int make_param_left(int the_num, vector<long long> &all_palindromes) {
     return (int)*--upper_bound(all_palindromes.begin(), all_palindromes.end(),
                                the_num);
