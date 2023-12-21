@@ -35,28 +35,69 @@ using namespace std;
 class Solution {
 public:
   int numberOfSets(int n, int maxDistance, vector<vector<int>> &roads) {
-    // 距离矩阵d
-    vector<vector<vector<int>>> d;
-
-    // 使用roads初始化d
-
-    // 首先遍历地图，这里需要保留一个性质，后面的m一定要比前面的m多一些点,
-    // 也就是符合dp属性
+    int ans = 0;
+    // 地图初始化
+    vector<vector<int>> d_init(n, vector<int>(n, 10000 + 10));
+    for (int i = 0; i < n; i++) {
+      d_init[i][i] = 0;
+    }
+    for (int i = 0; i < roads.size(); i++) {
+      d_init[roads[i][0]][roads[i][1]] =
+          min(d_init[roads[i][0]][roads[i][1]], roads[i][2]);
+      d_init[roads[i][1]][roads[i][0]] =
+          min(d_init[roads[i][0]][roads[i][1]], roads[i][2]);
+    }
+    // floyd算法
     for (int m = 0; m < (1 << n); m++) {
-      // 从左向右将m的每一位取出来
-      for (int mi = 0; mi < n; mi++) {
-        // 获取对应的点p，也就是需要新增加的k点
-        int p = m & (1 << mi);
-        if (p == 1) {
-          for (int i = 0; i < mi; i++) {
-            for (int j = 0; j < mi; j++) {
-              // [0, mi]这一段构成的子图
-              int m2 = (m >> (n - 1 - mi)) << (n - 1 - mi);
-              d[m2][i][j] = min(d[m2][i][j], d[m2][i][mi] + d[m2][mi][j]);
+      vector<vector<int>> d = d_init;
+      for (int k = 0; k < n; k++) {
+        // k点生效
+        if (m & (1 << k)) {
+          for (int i = 0; i < n; i++) {
+            if (m & (1 << i)) {
+              for (int j = 0; j < n; j++) {
+                if (m & (1 << j)) {
+                  d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+                }
+              }
             }
           }
         }
       }
+      bool flag = true;
+      // 计算d是否满足要求
+      for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+          if ((m & (1 << i)) && (m & (1 << j)) && d[i][j] > maxDistance) {
+            flag = false;
+            break;
+          }
+        }
+        if (!flag) {
+          break;
+        }
+      }
+      if (flag) {
+        //        cout << m << endl;
+        ans++;
+      }
     }
+    return ans;
   }
 };
+
+int main() {
+  //  int n = 3;
+  //  int maxDistance = 5;
+  //  vector<vector<int>> roads = {{0, 1, 2}, {1, 2, 10}, {0, 2, 10}};
+  //  int n = 3;
+  //  int maxDistance = 5;
+  //  vector<vector<int>> roads = {{0, 1, 20}, {0, 1, 10}, {1, 2, 2}, {0, 2,
+  //  2}}; int n = 1; int maxDistance = 10; vector<vector<int>> roads = {};
+  int n = 3;
+  int maxDistance = 12;
+  vector<vector<int>> roads = {{1, 0, 11}, {1, 0, 16}, {0, 2, 13}};
+  Solution solution;
+  cout << solution.numberOfSets(n, maxDistance, roads) << endl;
+  return 0;
+}
