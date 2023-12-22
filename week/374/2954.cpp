@@ -7,46 +7,41 @@ using namespace std;
 
 class Solution {
 public:
-  static const int mod = 1e9 + 7;
-  int f[1000010];
-  int init(int n, int p) {
-    f[0] = 1;
-    for (int i = 1; i < 1000005; i++) {
-      f[i] = (f[i - 1] * i) % p;
-    }
-  }
-  static int fastpow(int a, int b, int p) {
-    int ans = 1;
-    while (b) {
-      if (b & 1) {
-        ans = ans * a % p;
+  const int MOD = 1'000'000'007;
+  static const int MX = 100'000;
+
+  long long q_pow(long long x, int n) {
+    long long res = 1;
+    for (; n > 0; n /= 2) {
+      if (n % 2) {
+        res = res * x % MOD;
       }
-      a = a * a % p;
-      b >>= 1;
+      x = x * x % MOD;
     }
-    return ans;
+    return res;
   }
-  static int inv(int a, int p) { return fastpow(a, p - 2, p); }
-  int C(int n, int m, int p) {
-    return f[n] * inv(f[m], p) % p * inv(f[n - m], p) % p;
-  }
-  int lucas(int n, int m, int p) {
-    if (m == 0) {
-      return 1;
+
+  // 组合数模板
+  long long fac[MX], inv_fac[MX];
+
+  void init() {
+    fac[0] = 1;
+    for (int i = 1; i < MX; i++) {
+      fac[i] = fac[i - 1] * i % MOD;
     }
-    // optimize with Lucas theorem
-    return (C(n % p, m % p, p) * lucas(n / p, m / p, p)) % p;
+    inv_fac[MX - 1] = q_pow(fac[MX - 1], MOD - 2);
+    for (int i = MX - 1; i > 0; i--) {
+      inv_fac[i - 1] = inv_fac[i] * i % MOD;
+    }
   }
+
+  long long comb(int n, int k) {
+    return fac[n] * inv_fac[k] % MOD * inv_fac[n - k] % MOD;
+  }
+
   int numberOfSequence(int n, vector<int> &sick) {
+    init();
     long long ans = 1;
-    init(n, mod);
-    cout << C(2, 2, mod) << endl;
-    cout << C(2, 1, mod) << endl;
-    cout << C(3, 0, mod) << endl;
-    cout << C(3, 1, mod) << endl;
-    cout << C(3, 2, mod) << endl;
-    cout << C(3, 3, mod) << endl;
-    cout << lucas(3, 2, mod) << endl;
     vector<int> v;
     int cnt = 0;
     sort(sick.begin(), sick.end());
@@ -59,7 +54,7 @@ public:
       if (sick[i] - sick[i - 1] >= 2) {
         int gap = sick[i] - sick[i - 1] - 1;
         v.push_back(gap);
-        ans = ans * fastpow(2, gap - 1, mod) % mod;
+        ans = ans * q_pow(2, gap - 1) % MOD;
       }
     }
 
@@ -71,9 +66,9 @@ public:
     int acc = 0;
     // 线段排列
     for (int i = 0; i < v.size(); i++) {
-      int cc = C(total - acc, v[i], mod);
-      ans += cc;
-      ans %= mod;
+      int cc = comb(total - acc, v[i]);
+      ans *= cc;
+      ans %= MOD;
       acc += v[i];
     }
 
