@@ -11,7 +11,7 @@ public:
     hFences.push_back(m);
     vFences.insert(vFences.begin(), 1);
     vFences.push_back(n);
-    set<int> hSet, vSet;
+    unordered_set<int> hSet, vSet;
     for (int i = 0; i < hFences.size(); i++) {
       for (int j = i + 1; j < hFences.size(); j++) {
         hSet.insert(hFences[j] - hFences[i]);
