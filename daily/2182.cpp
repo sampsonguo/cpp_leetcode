@@ -19,31 +19,50 @@ public:
     for (int i = 0; i < s.size(); i++) {
       // 如果该元素有值
       while (m[s[i]] > 0) {
+        bool empty = false;
         // 每n个元素一组
         for (int j = 0; j < repeatLimit; j++) {
           if (m[s[i]] > 0) {
             ans += s[i];
             m[s[i]]--;
           } else {
+            empty = true;
             break;
           }
         }
+        if (m[s[i]] == 0) {
+          continue;
+        }
+        if (i + 1 >= s.size()) {
+          return ans;
+        }
+        bool flag = true;
         // 添加完之后，还需要找下一个能添加的元素
         for (int j = i + 1; j < s.size(); j++) {
           if (m[s[j]] > 0) {
             ans += s[j];
             m[s[j]]--;
-          } else {
+            flag = false;
             break;
           }
         }
+        if (flag) {
+          return ans;
+        }
       }
     }
-    return s;
+    return ans;
   }
 };
 
 int main() {
   cout << Solution().repeatLimitedString("cczazcc", 3) << endl;
   cout << Solution().repeatLimitedString("aababab", 2) << endl;
+  cout << Solution().repeatLimitedString("robnsdvpuxbapuqgopqvxdrchivlifeepy",
+                                         2)
+       << endl;
+  cout << Solution().repeatLimitedString(
+              "xyutfpopdynbadwtvmxiemmusevduloxwvpkjioizvanetecnuqbqqdtrwrkgt",
+              1)
+       << endl;
 }
